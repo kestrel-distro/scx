@@ -1,0 +1,39 @@
+name: sync-upstream
+
+# Merge sched-ext/scx into this fork daily. Expect clean merges: the only
+# intended divergence is scheds/rust/scx_kestrel, the Cargo.toml member line
+# and these workflows. A conflict here means upstream moved the shared BPF
+# headers or the scheduler framework, which is exactly when scx_kestrel and
+# linux-kestrel have to be rebuilt together.
+
+on:
+  schedule:
+    - cron: '41 4 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Merge upstream
+        run: |
+          git config user.name "kestrel-sync"
+          git config user.email "sync@kestrel.invalid"
+          git remote add upstream https://github.com/sched-ext/scx.git
+          git fetch --no-tags upstream main
+          if git merge-base --is-ancestor upstream/main HEAD; then
+            echo "already up to date"
+            exit 0
+          fi
+          git checkout -B main origin/main
+          git merge --no-edit upstream/main
+
+      - name: Push
+        run: git push origin main

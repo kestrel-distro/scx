@@ -1,0 +1,43 @@
+name: kestrel-build
+
+# Build scx_kestrel from this fork in a clean Arch container. The cargo
+# workspace is the upstream tree plus our scheduler crate, so a green build
+# here means the only Kestrel divergence still compiles.
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'scheds/rust/scx_kestrel/**'
+      - 'Cargo.toml'
+      - '.github/workflows/kestrel-build.yml'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    container:
+      image: archlinux:latest
+      options: --privileged
+    env:
+      CI: "true"
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Prepare build environment
+        run: |
+          retry() { for i in 1 2 3 4 5; do "$@" && return 0; echo "retrying: $*"; sleep 15; done; return 1; }
+          retry pacman -Sy --noconfirm --needed archlinux-keyring
+          retry pacman -Su --noconfirm --needed base-devel clang llvm rust git sudo
+          useradd -m builder
+          printf 'builder ALL=(ALL) NOPASSWD: ALL\n' > /etc/sudoers.d/builder
+          chown -R builder:builder "$GITHUB_WORKSPACE"
+
+      - name: Build scx_kestrel
+        run: sudo -u builder cargo build --release -p scx_kestrel
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: scx_kestrel
+          if-no-files-found: error
+          path: target/release/scx_kestrel

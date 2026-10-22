@@ -1,0 +1,91 @@
+[
+	{
+		"name": "kestrel-desktop",
+		"comment": "Quickshell and compositor-adjacent work. Hint 1 or the kestrel-desktop class cgroup.",
+		"matches": [
+			[{ "KestrelHint": 1 }],
+			[{ "CgroupContains": "kestrel-desktop.slice" }]
+		],
+		"kind": {
+			"Grouped": {
+				"util_range": [0.2, 0.8],
+				"weight": 1000,
+				"preempt": true,
+				"growth_algo": "RandomTopo"
+			}
+		}
+	},
+	{
+		"name": "kestrel-term",
+		"comment": "Interactive terminals (Ghostty). Hint 2 or the kestrel-term class cgroup.",
+		"matches": [
+			[{ "KestrelHint": 2 }],
+			[{ "CgroupContains": "kestrel-term.slice" }]
+		],
+		"kind": {
+			"Grouped": {
+				"util_range": [0.2, 0.8],
+				"weight": 300,
+				"growth_algo": "RandomTopo"
+			}
+		}
+	},
+	{
+		"name": "kestrel-browser-active",
+		"comment": "Focused browser process. Hint 3 or the browser active bucket.",
+		"matches": [
+			[{ "KestrelHint": 3 }],
+			[{ "CgroupContains": "kestrel-browser.slice/active" }]
+		],
+		"kind": {
+			"Grouped": {
+				"util_range": [0.2, 0.8],
+				"weight": 500,
+				"growth_algo": "RandomTopo"
+			}
+		}
+	},
+	{
+		"name": "kestrel-browser-background",
+		"comment": "Unfocused browser processes. Hint 4 or the browser background bucket.",
+		"matches": [
+			[{ "KestrelHint": 4 }],
+			[{ "CgroupContains": "kestrel-browser.slice/background" }]
+		],
+		"kind": {
+			"Grouped": {
+				"util_range": [0.2, 0.8],
+				"weight": 100,
+				"growth_algo": "RandomTopo"
+			}
+		}
+	},
+	{
+		"name": "kestrel-game",
+		"comment": "Games. Hint 5 or the kestrel-game class cgroup.",
+		"matches": [
+			[{ "KestrelHint": 5 }],
+			[{ "CgroupContains": "kestrel-game.slice" }]
+		],
+		"kind": {
+			"Grouped": {
+				"util_range": [0.2, 0.8],
+				"weight": 800,
+				"preempt": true,
+				"growth_algo": "RandomTopo"
+			}
+		}
+	},
+	{
+		"name": "default",
+		"comment": "Everything the broker has not classified stays on plain scx_layered scheduling.",
+		"matches": [
+			[]
+		],
+		"kind": {
+			"Open": {
+				"growth_algo": "RandomTopo"
+			}
+		}
+	}
+]
