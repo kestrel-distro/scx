@@ -1,0 +1,31 @@
+# Maintainer: Kestrel <https://github.com/kestrel-distro>
+#
+# Builds scx_kestrel from the kestrel-distro/scx fork. The workspace crate is
+# built with cargo; the binary loads through scx_loader like any other
+# sched_ext scheduler. This PKGBUILD lives two levels below the repo root and
+# builds the checkout in place.
+
+pkgname=scx-kestrel
+pkgver=1.1.4
+pkgrel=1
+pkgdesc="Kestrel's sched_ext scheduler: scx_kestrel, a hint-driven scx_layered fork"
+arch=(x86_64)
+url="https://github.com/kestrel-distro/scx"
+license=(GPL-2.0-only)
+depends=(gcc-libs)
+makedepends=(cargo clang llvm git)
+options=(!lto)
+source=()
+sha256sums=()
+
+build() {
+    cd "${startdir}/../.."
+    cargo build --release -p scx_kestrel
+}
+
+package() {
+    cd "${startdir}/../.."
+    install -Dm755 target/release/scx_kestrel "$pkgdir/usr/bin/scx_kestrel"
+    install -Dm644 scheds/rust/scx_kestrel/kestrel-layers.json \
+        "$pkgdir/usr/share/scx_kestrel/kestrel-layers.json"
+}

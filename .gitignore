@@ -19,3 +19,6 @@ CLAUDE.md
 **/*.tmp
 .agent/
 .agents/
+
+# Kestrel: track our packaging recipe despite the global PKGBUILD ignore.
+!packaging/arch/PKGBUILD
