@@ -49,3 +49,8 @@ enable_backtrace = []
 
 [package.metadata.appimage]
 auto_link = true
+
+# scx_kestrel reads the Kestrel-only scx_bpf_task_hint kfunc, so it cannot
+# verify against the stock kernels veristat downloads.
+[package.metadata.veristat]
+disable = true
