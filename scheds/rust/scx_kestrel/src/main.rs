@@ -4750,10 +4750,11 @@ fn verify_layer_specs(specs: &[LayerSpec]) -> Result<HashMap<u64, HintLayerInfo>
                         hint_equals_cnt += 1;
                     }
                     LayerMatch::KestrelHint(hint) => {
-                        if *hint > 1024 {
+                        if !kestrel_hint_in_range(*hint) {
                             bail!(
-                                "Spec {:?} has Kestrel hint value outside the range [0, 1024]",
-                                spec.name
+                                "Spec {:?} has Kestrel hint value outside the range [0, {}]",
+                                spec.name,
+                                KESTREL_HINT_MAX
                             );
                         }
                     }

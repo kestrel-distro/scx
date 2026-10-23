@@ -63,6 +63,14 @@ impl LayerSpec {
     }
 }
 
+/// Highest hint scx_kestrel matches. The kernel enforces the same bound in
+/// sched_setattr; a value above it is a config error, not a no-match.
+pub const KESTREL_HINT_MAX: u32 = 1024;
+
+pub fn kestrel_hint_in_range(hint: u32) -> bool {
+    hint <= KESTREL_HINT_MAX
+}
+
 #[derive(Clone, Debug, Default, Serialize, Deserialize)]
 pub enum LayerPlacement {
     #[default]
@@ -264,5 +272,62 @@ impl LayerKind {
             } => *util_includes_open_cputime,
             _ => false,
         }
+    }
+}
+
+#[cfg(test)]
+mod kestrel_tests {
+    use super::*;
+
+    #[test]
+    fn kestrel_hint_match_parses_and_serializes() {
+        let input = r#"[{
+            "name": "kestrel-browser-active",
+            "matches": [[{ "KestrelHint": 3 }]],
+            "kind": { "Grouped": { "util_range": [0.2, 0.8], "weight": 500 } }
+        }]"#;
+        let specs = LayerSpec::parse(input).expect("KestrelHint parses");
+        assert_eq!(specs.len(), 1);
+        match &specs[0].matches[0][0] {
+            LayerMatch::KestrelHint(hint) => assert_eq!(*hint, 3),
+            other => panic!("expected KestrelHint, got {other:?}"),
+        }
+        let json = serde_json::to_string(&specs[0]).expect("serializes");
+        assert!(json.contains("KestrelHint"));
+    }
+
+    #[test]
+    fn baked_layers_cover_every_documented_class() {
+        let config: LayerConfig =
+            serde_json::from_str(include_str!("../kestrel-layers.json")).expect("baked JSON parses");
+        let mut hints = Vec::new();
+        for spec in &config.specs {
+            for block in &spec.matches {
+                for m in block {
+                    if let LayerMatch::KestrelHint(h) = m {
+                        hints.push((*h, spec.name.as_str()));
+                    }
+                }
+            }
+        }
+        assert_eq!(
+            hints,
+            vec![
+                (1, "kestrel-desktop"),
+                (2, "kestrel-term"),
+                (3, "kestrel-browser-active"),
+                (4, "kestrel-browser-background"),
+                (5, "kestrel-game"),
+            ]
+        );
+        assert_eq!(config.specs.last().unwrap().name, "default");
+        assert!(config.specs.last().unwrap().matches.iter().all(|block| block.is_empty()));
+    }
+
+    #[test]
+    fn hint_range_is_inclusive() {
+        assert!(kestrel_hint_in_range(0));
+        assert!(kestrel_hint_in_range(1024));
+        assert!(!kestrel_hint_in_range(1025));
     }
 }
