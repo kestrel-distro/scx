@@ -30,7 +30,7 @@ catch-all open layer sits last. Hint values are Kestrel-defined:
 | Hint | Class |
 |---|---|
 | 1 | desktop (Quickshell, compositor-adjacent) |
-| 2 | term (Ghostty) |
+| 2 | term (foot) |
 | 3 | browser active |
 | 4 | browser background |
 | 5 | game |

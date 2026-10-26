@@ -17,7 +17,7 @@
 	},
 	{
 		"name": "kestrel-term",
-		"comment": "Interactive terminals (Ghostty). Hint 2 or the kestrel-term class cgroup.",
+		"comment": "Interactive terminals (foot). Hint 2 or the kestrel-term class cgroup.",
 		"matches": [
 			[{ "KestrelHint": 2 }],
 			[{ "CgroupContains": "kestrel-term.slice" }]
