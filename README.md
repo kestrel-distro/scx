@@ -1,3 +1,23 @@
+# Kestrel fork: `scx_kestrel`
+
+This repository is Kestrel's fork of `sched-ext/scx`. It adds
+`scheds/rust/scx_kestrel`, a fork of `scx_layered` that consumes the per-task
+hint exposed by `linux-kestrel`:
+
+- the kernel carries `sched_ext_hint` in `struct sched_attr` and
+  `scx_bpf_task_hint()` in sched_ext; `scx_kestrel` reads it per task;
+- the layer set is baked to `kestrel-layers.json` and passed with
+  `scx_kestrel -f` by `scx_loader` (see `kestrel-distro/scx-loader`);
+- the packaged binary is `scx-kestrel` (`packaging/arch`), served from the
+  Kestrel `[kestrel]` repository;
+- `bench/` in `kestrel-distro/kernel` and `kestrel-bench` in the payload run the
+  `scx_bpfland` vs `scx_kestrel` A/B. `scx_bpfland` stays the session default
+  until a repeatable win.
+
+Upstream `sched-ext/scx` content follows.
+
+---
+
 # Sched_ext Schedulers and Tools
 
 [![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/sched-ext/scx)
