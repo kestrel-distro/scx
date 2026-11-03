@@ -82,7 +82,7 @@ use tracing_subscriber::filter::EnvFilter;
 use walkdir::WalkDir;
 
 const SCHEDULER_NAME: &str = "scx_kestrel";
-const MAX_PATH: usize = bpf_intf::consts_MAX_PATH as usize;
+const MAX_CGROUP_PATTERN: usize = bpf_intf::consts_MAX_CGROUP_PATTERN as usize;
 const MAX_COMM: usize = bpf_intf::consts_MAX_COMM as usize;
 const MAX_LAYER_WEIGHT: u32 = bpf_intf::consts_MAX_LAYER_WEIGHT;
 const MIN_LAYER_WEIGHT: u32 = bpf_intf::consts_MIN_LAYER_WEIGHT;
@@ -4695,17 +4695,17 @@ fn verify_layer_specs(specs: &[LayerSpec]) -> Result<HashMap<u64, HintLayerInfo>
             for one in ands.iter() {
                 match one {
                     LayerMatch::CgroupPrefix(prefix) => {
-                        if prefix.len() > MAX_PATH {
+                        if prefix.len() > MAX_CGROUP_PATTERN {
                             bail!("Spec {:?} has too long a cgroup prefix", spec.name);
                         }
                     }
                     LayerMatch::CgroupSuffix(suffix) => {
-                        if suffix.len() > MAX_PATH {
+                        if suffix.len() > MAX_CGROUP_PATTERN {
                             bail!("Spec {:?} has too long a cgroup suffix", spec.name);
                         }
                     }
                     LayerMatch::CgroupContains(substr) => {
-                        if substr.len() > MAX_PATH {
+                        if substr.len() > MAX_CGROUP_PATTERN {
                             bail!("Spec {:?} has too long a cgroup substr", spec.name);
                         }
                     }

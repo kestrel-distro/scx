@@ -29,13 +29,14 @@ enum consts {
 	MAX_CPUS_U8		= MAX_CPUS / 8,
 	MAX_TASKS		= 131072,
 	MAX_PATH		= 4096,
+	MAX_CGROUP_PATTERN	= 512,
 	MAX_NUMA_NODES		= 32,
 	MAX_LLCS		= 64,
 	MAX_COMM		= 16,
-	MAX_LAYER_MATCH_ORS	= 32,
+	MAX_LAYER_MATCH_ORS	= 8,
 	/* 64 chars for user-provided name, 64 for possible template suffix. */
 	MAX_LAYER_NAME		= 128,
-	MAX_LAYERS		= 16,
+	MAX_LAYERS		= 8,
 	MAX_CGROUP_REGEXES	= 16,
 	MAX_LAYER_WEIGHT	= 10000,
 	MIN_LAYER_WEIGHT	= 1,
@@ -308,9 +309,9 @@ enum layer_match_kind {
 
 struct layer_match {
 	int		kind;
-	char		cgroup_prefix[MAX_PATH];
-	char		cgroup_suffix[MAX_PATH];
-	char		cgroup_substr[MAX_PATH];
+	char		cgroup_prefix[MAX_CGROUP_PATTERN];
+	char		cgroup_suffix[MAX_CGROUP_PATTERN];
+	char		cgroup_substr[MAX_CGROUP_PATTERN];
 	u32		cgroup_regex_id;
 	char		comm_prefix[MAX_COMM];
 	char		pcomm_prefix[MAX_COMM];
