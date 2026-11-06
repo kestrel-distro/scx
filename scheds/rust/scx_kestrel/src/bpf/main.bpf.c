@@ -2670,7 +2670,7 @@ bool try_consume_layers(u32 *layer_order, u32 nr, u32 exclude_layer_id,
 {
 	u32 u;
 
-	if (nr >= MAX_LAYERS) {
+	if (nr > MAX_LAYERS) {
 		scx_bpf_error("nr=%u too high", nr);
 		return false;
 	}
